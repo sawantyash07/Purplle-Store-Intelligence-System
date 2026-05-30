@@ -1,0 +1,12 @@
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - store_data:/data
+    restart: unless-stopped
+
+volumes:
+  store_data:
+

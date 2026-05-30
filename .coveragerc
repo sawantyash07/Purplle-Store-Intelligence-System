@@ -1,0 +1,11 @@
+[run]
+omit =
+    tests/*
+    pipeline/detect.py
+    pipeline/run_all.py
+    pipeline/replay.py
+
+[report]
+show_missing = True
+fail_under = 70
+

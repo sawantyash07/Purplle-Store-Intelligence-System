@@ -1,0 +1,40 @@
+{
+  "store_id": "STORE_BLR_002",
+  "open_hours": {"opens": "09:00", "closes": "22:00"},
+  "cameras": {
+    "CAM 1": {
+      "camera_id": "CAM_FLOOR_00",
+      "kind": "floor",
+      "clip_started_at": "2026-04-10T14:10:27Z",
+      "zones": {"SKINCARE": [0, 0, 1920, 1080]}
+    },
+    "CAM 2": {
+      "camera_id": "CAM_FLOOR_01",
+      "kind": "floor",
+      "clip_started_at": "2026-04-10T14:10:02Z",
+      "zones": {
+        "MAKEUP": [0, 150, 1000, 1080],
+        "SKINCARE": [1000, 100, 1920, 1080]
+      }
+    },
+    "CAM 3": {
+      "camera_id": "CAM_ENTRY_01",
+      "kind": "entry",
+      "clip_started_at": "2026-04-10T14:08:00Z",
+      "threshold_y": 560,
+      "zones": {}
+    },
+    "CAM 4": {
+      "camera_id": "CAM_FLOOR_02",
+      "kind": "floor",
+      "clip_started_at": "2026-04-10T14:09:45Z",
+      "zones": {"BACKROOM": [0, 0, 1920, 1080]}
+    },
+    "CAM 5": {
+      "camera_id": "CAM_BILLING_01",
+      "kind": "billing",
+      "clip_started_at": "2026-04-10T14:09:48Z",
+      "zones": {"BILLING": [0, 120, 1100, 1080]}
+    }
+  }
+}
