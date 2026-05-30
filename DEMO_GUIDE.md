@@ -12,7 +12,7 @@ curl.exe http://localhost:8000/health
 
 ```powershell
 python -m pip install -r requirements.txt
-python -m pipeline.run_all --clips "C:\Users\ysawa\AppData\Local\Temp" --output data/events.jsonl --stride 10
+python -m pipeline.run_all --clips "D:\Purplle Store Intelligence System\CCTV Footage" --output data/events.jsonl
 ```
 
 ## 3. Correlate POS
@@ -44,4 +44,3 @@ curl.exe http://localhost:8000/health
 ## 7. Demonstrate Idempotency
 
 Replay the same file again. The ingest response reports duplicates rather than inserting a second copy.
-

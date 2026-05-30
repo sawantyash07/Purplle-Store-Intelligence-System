@@ -52,7 +52,7 @@ def add_abandonment_events(events_path: Path, pos_path: Path) -> int:
                 "metadata": {**exited["metadata"], "queue_depth": join["metadata"].get("queue_depth")},
             })
     events.extend(added)
-    events.sort(key=lambda event: (event["timestamp"], event["event_id"]))
+    events.sort(key=lambda event: (_time(event["timestamp"]), event["event_id"]))
     events_path.write_text(
         "".join(json.dumps(event, separators=(",", ":")) + "\n" for event in events),
         encoding="utf-8",

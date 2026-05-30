@@ -10,7 +10,7 @@ The complete Store Intelligence System was verified end to end using the actual 
 Two defects were found and fixed during measured execution:
 
 1. The inferred camera mapping did not match the filenames in `CCTV Footage` and omitted `CAM 4.mp4`.
-2. POS abandonment correlation appended events after end-of-file and broke global timestamp ordering.
+2. Event sorting compared ISO timestamps lexically, which misordered fractional-second values against whole-second values.
 
 Regression coverage was added for the ordering fix. The final clean container state is running and healthy.
 
@@ -40,7 +40,7 @@ Regression coverage was added for the ordering fix. The final clean container st
 | --- | --- | --- |
 | Event ingestion | PASS | Full replay accepted `326` events |
 | Metrics | PASS | HTTP `200`, visitors `3`, conversion `0.0`, queue `2` |
-| Funnel | PASS | HTTP `200`, monotonic stage counts |
+| Funnel | PARTIAL | HTTP `200`, monotonic stage counts; downstream stages intentionally under-report without cross-camera identity linkage |
 | Heatmap | PASS | HTTP `200`, valid 0-100 scores |
 | Anomalies | PASS | HTTP `200`, valid structure |
 | Health | PASS | HTTP `200`, status `ok`, fresh last event |
@@ -61,7 +61,7 @@ Regression coverage was added for the ordering fix. The final clean container st
 ## Automated Tests
 
 ```text
-15 passed
+16 passed
 93.15% statement coverage
 ```
 
@@ -89,15 +89,16 @@ The suite covers idempotency, malformed payloads, invalid JSON, batch cap, empty
 - The official layout JSON, POS records, sample events, and assertions referenced by the challenge were not present. Zones are inferred and should be replaced if official calibration assets arrive.
 - `CAM 4.mp4` yielded zero retained events due to the heavily occluded backroom view.
 - The supplied POS file is empty, so the live canonical dashboard correctly shows zero conversion. Positive conversion remains verified by automated tests.
-- Cross-camera Re-ID and staff classification remain conservative heuristics, documented in `DETECTION_EVALUATION.md`.
+- Cross-camera Re-ID remains a documented limitation in `CROSS_CAMERA_REID_FEASIBILITY.md`.
+- Staff classification is implemented as a conservative long-presence proxy, tested at the API layer, and not demonstrated by the supplied clips. See `STAFF_CLASSIFICATION_REVIEW.md`.
+- The funnel limitation is explicitly analyzed in `CROSS_CAMERA_REID_FEASIBILITY.md`. A safety review rejected a submission-time Re-ID patch because correct linkage cannot be measured without labelled trajectories.
 
 ## Estimated Challenge Score
 
-Estimated score: **88/100**. API correctness, containerization, documentation, dashboard, resilience, and test coverage are strong. The unresolved scoring uncertainty is held-out computer-vision accuracy because official calibration and ground-truth assets were unavailable.
+Estimated base score: **70/100**, with an eligible dashboard bonus. API correctness, containerization, documentation, dashboard, resilience, and test coverage are strong. The unresolved scoring risks are held-out computer-vision accuracy, camera-local identity, and staff-classification evidence because official calibration and ground-truth assets were unavailable.
 
 ## Overall Status
 
 **PASS**
 
 The system runs end to end from real MP4 inputs to validated JSONL, repeat-safe POS correlation, Docker replay, live metrics, browser dashboard, SQLite persistence, and stress-tested API behavior. Remaining limitations are documented data-quality and calibration risks, not execution failures.
-

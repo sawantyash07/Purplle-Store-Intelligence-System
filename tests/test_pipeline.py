@@ -67,3 +67,15 @@ def test_sort_events_orders_jsonl_by_timestamp(tmp_path):
     sort_events(output)
     sorted_rows = [json.loads(line) for line in output.read_text().splitlines()]
     assert [row["event_id"] for row in sorted_rows] == ["a", "b"]
+
+
+def test_sort_events_orders_fractional_timestamp_after_whole_second(tmp_path):
+    output = tmp_path / "events.jsonl"
+    rows = [
+        {"event_id": "later", "timestamp": "2026-01-01T00:00:00.500000Z"},
+        {"event_id": "earlier", "timestamp": "2026-01-01T00:00:00Z"},
+    ]
+    output.write_text("\n".join(json.dumps(row) for row in rows), encoding="utf-8")
+    sort_events(output)
+    sorted_rows = [json.loads(line) for line in output.read_text().splitlines()]
+    assert [row["event_id"] for row in sorted_rows] == ["earlier", "later"]

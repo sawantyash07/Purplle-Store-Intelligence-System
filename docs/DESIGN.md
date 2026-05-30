@@ -30,6 +30,8 @@ Re-ID is conservative by design. After `EXIT`, the entrance tracker stores a rec
 
 This approach avoids aggressive identity claims from anonymised footage, but it is not appearance-based cross-camera Re-ID. Floor-camera tracker IDs are therefore used for zone heatmaps and dwell data but are intersected with known entrance sessions before funnel calculation. This prevents inflated conversion funnels when local camera IDs cannot be linked confidently.
 
+The measured canonical replay makes this boundary visible: three entrance-session tokens overlap with zero of the 105 floor-zone tokens. The resulting funnel intentionally under-reports downstream stages rather than asserting unverified identities. `CROSS_CAMERA_REID_FEASIBILITY.md` documents why a submission-time Re-ID patch was rejected after a safety review.
+
 ## 6. Event Stream Design
 
 Events implement the required catalogue: `ENTRY`, `EXIT`, `REENTRY`, `ZONE_ENTER`, `ZONE_EXIT`, `ZONE_DWELL`, `BILLING_QUEUE_JOIN`, and `BILLING_QUEUE_ABANDON`. Every event includes a globally unique UUID, store, camera, visitor token, UTC timestamp, optional zone, dwell duration, staff flag, confidence, and metadata. JSONL is easy to inspect, append, replay, and archive. The API accepts batches of up to 500 records.
@@ -69,4 +71,3 @@ AI suggested a hosted VLM for staff uniform classification and zone labelling. I
 AI suggested treating every tracker ID as a session. I rejected that because occlusion can churn tracker IDs and cross-camera IDs are not identities. Entrance crossing starts the authoritative visit session; funnel stages are intersected with those entrance tokens.
 
 AI also suggested a fixed queue threshold. I refined that recommendation: queue spikes use `current_depth > rolling_mean + 2 * rolling_std` after enough samples and retain a threshold fallback only during cold start. This is more actionable across stores with different normal traffic patterns.
-

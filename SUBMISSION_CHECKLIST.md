@@ -4,7 +4,7 @@
 | --- | --- | --- |
 | Docker builds | PASS | `docker compose up --build -d`. |
 | API starts | PASS | `/health` responds through port `8000`. |
-| Tests pass | PASS | 15 deterministic pytest tests. |
+| Tests pass | PASS | 16 deterministic pytest tests. |
 | Coverage >= 85% | PASS | Audited coverage is 93.15%. |
 | Required API endpoints | PASS | Metrics, funnel, heatmap, anomalies, health, ingest. |
 | Dashboard works | PASS | Root page polls live metrics. |
@@ -20,7 +20,7 @@
 
 ## Final Estimate
 
-Estimated score: **88/100**, with the largest remaining uncertainty in held-out CV accuracy due to missing official calibration assets.
+Estimated base score: **70/100**, with an eligible dashboard bonus. Remaining uncertainty includes held-out CV accuracy, camera-local identity, and staff-classification evidence.
 
 ## Remaining Risks
 

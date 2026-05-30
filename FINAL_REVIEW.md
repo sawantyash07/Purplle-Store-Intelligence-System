@@ -16,7 +16,7 @@ The repository implements an edge-style CCTV analytics pipeline and a central Fa
 
 ## Weaknesses
 
-- Cross-camera Re-ID is conservative geometry, not appearance embeddings.
+- Cross-camera Re-ID is deliberately not implemented. Camera-local identities protect metric integrity but make the verified funnel conservative: `entry=3`, `zone_visit=0`.
 - Staff classification is a long-presence proxy because no labelled uniform examples were supplied.
 - The inferred layout must be replaced if the official dataset layout becomes available.
 - SQLite analytics scan persisted rows on request. That is appropriate for challenge scale, not fleet scale.
@@ -38,7 +38,10 @@ The repository implements an edge-style CCTV analytics pipeline and a central Fa
 
 The provided extraction omitted the referenced official `store_layout.json`, `pos_transactions.csv`, `sample_events.jsonl`, and `assertions.py`. The repository includes an inferred editable layout and valid empty POS CSV so the full system remains runnable.
 
+## Submission Recommendation
+
+Submit the current implementation. Do not add cross-camera identity linking without labelled trajectories and calibrated transition rules. The feasibility review found timestamp-only matching ambiguous, with up to 94 candidate zone entries inside a two-minute window for one re-entry session.
+
 ## Estimated Score
 
-Estimated score: **88/100** before any held-out detection comparison. API, production readiness, documentation, AI reasoning, and dashboard bonus are strong. The largest uncertainty is detection accuracy against ground truth because official calibration assets were unavailable.
-
+Estimated base score: **70/100**, with an eligible dashboard bonus. API, production readiness, documentation, AI reasoning, and dashboard evidence are strong. The largest uncertainties are detection accuracy against ground truth, camera-local identity, and staff-classification evidence because official calibration assets were unavailable.

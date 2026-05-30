@@ -2,7 +2,7 @@
 
 ## Result
 
-The final deterministic suite passes with **15 tests** and **93.15% statement coverage**, above the requested 85% target. Run:
+The final deterministic suite passes with **16 tests** and **93.15% statement coverage**, above the requested 85% target. Run:
 
 ```powershell
 python -m pytest --cov=app --cov=pipeline --cov-report=term-missing

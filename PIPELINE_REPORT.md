@@ -39,5 +39,4 @@ The default-stride detection run completed without errors or skipped configured 
 
 - `data/events.jsonl` exists and validates.
 - `CAM 4.mp4` produced zero events. This is not a pipeline error; the backroom view is heavily occluded and no person track met the retained detection path during this run.
-- POS correlation initially exposed an ordering bug because appended abandonment events were placed at end-of-file. The correlator was fixed to rewrite the combined stream chronologically, and a regression test was added.
-
+- POS correlation exposed an ordering bug because ISO timestamp strings with fractional seconds were sorted lexically against whole-second values. Detection output and correlated output now sort parsed datetimes, and a regression test covers the fractional-second case.

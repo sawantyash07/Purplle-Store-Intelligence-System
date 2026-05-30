@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+from datetime import datetime
 from pathlib import Path
 
 from pipeline.detect import load_config, process_video
@@ -9,7 +10,7 @@ from pipeline.detect import load_config, process_video
 
 def sort_events(output: Path) -> None:
     events = [json.loads(line) for line in output.read_text(encoding="utf-8").splitlines() if line.strip()]
-    events.sort(key=lambda event: (event["timestamp"], event["event_id"]))
+    events.sort(key=lambda event: (datetime.fromisoformat(event["timestamp"].replace("Z", "+00:00")), event["event_id"]))
     output.write_text("".join(json.dumps(event, separators=(",", ":")) + "\n" for event in events), encoding="utf-8")
 
 

@@ -29,6 +29,45 @@ Live dashboard at http://localhost:8000
 
 Raw footage stays outside the API container. Only compact behavioural events are ingested centrally, which keeps the acceptance path lightweight and mirrors an edge-processing deployment.
 
+## Quick Evaluation Guide
+
+A reviewer can verify the containerized intelligence surface in less than five minutes:
+
+```powershell
+cd "<repository-path>"
+docker compose up --build -d
+curl.exe http://localhost:8000/health
+curl.exe http://localhost:8000/stores/STORE_BLR_002/metrics
+start http://localhost:8000
+```
+
+If a locally generated `data/events.jsonl` artifact is available, populate live metrics in seconds:
+
+```powershell
+python -m pipeline.replay --events data/events.jsonl --shift-to-now --batch-size 50 --delay 0
+```
+
+Then inspect the required analytics endpoints:
+
+```powershell
+curl.exe http://localhost:8000/stores/STORE_BLR_002/metrics
+curl.exe http://localhost:8000/stores/STORE_BLR_002/funnel
+curl.exe http://localhost:8000/stores/STORE_BLR_002/heatmap
+curl.exe http://localhost:8000/stores/STORE_BLR_002/anomalies
+```
+
+Expected verified results after replaying the locally generated canonical stream:
+
+| Signal | Value |
+| --- | ---: |
+| Canonical events ingested | 326 |
+| Unique visitors | 3 |
+| Current queue depth | 2 |
+| Heatmap zones | Billing, Makeup, Skincare |
+| Feed health | `OK` |
+
+`data/events.jsonl` is generated locally and intentionally ignored by Git because it is derived from restricted challenge footage. To reproduce it, follow **Run Detection** below.
+
 ## Folder Structure
 
 ```text
@@ -47,7 +86,7 @@ Dockerfile           Minimal API image without the large CV runtime
 Docker Desktop must be running. From the project directory:
 
 ```powershell
-cd "D:\Purplle Store Intelligence System"
+cd "<repository-path>"
 docker compose up --build -d
 curl.exe http://localhost:8000/health
 ```
@@ -66,9 +105,8 @@ Process all configured clips:
 
 ```powershell
 python -m pipeline.run_all `
-  --clips "C:\Users\ysawa\AppData\Local\Temp" `
-  --output data/events.jsonl `
-  --stride 10
+  --clips "<repository-path>\CCTV Footage" `
+  --output data/events.jsonl
 ```
 
 The first run downloads `yolo11n.pt`. `pipeline.run_all` processes every configured clip and globally sorts emitted events by timestamp. Reduce `--stride` for higher recall at the cost of CPU time.
@@ -125,7 +163,7 @@ curl.exe -X POST -F "file=@data/pos_transactions.csv" http://localhost:8000/pos/
 python -m pytest --cov=app --cov=pipeline --cov-report=term-missing
 ```
 
-The audited suite contains 14 deterministic tests and exceeds the challenge's 70% statement-coverage requirement.
+The audited suite contains 16 deterministic tests with 93.15% statement coverage, exceeding the challenge's 70% requirement.
 
 ## Supplied-Data Assumptions
 
@@ -144,6 +182,7 @@ Replace `config/store_layout.json` coordinates with official definitions if thos
 ## Known Limitations
 
 - Cross-camera Re-ID is conservative. Floor-camera tracker tokens enrich heatmaps but are not guessed into entrance sessions.
+- The funnel is intentionally conservative: camera-local tokens are intersected with authoritative entrance sessions. Without labelled cross-camera Re-ID, the verified stream reports downstream funnel stages as zero while heatmap activity remains available. See `CROSS_CAMERA_REID_FEASIBILITY.md`.
 - Staff classification uses long continuous presence as a transparent proxy because no labelled uniform data was supplied.
 - Queue depth is region-based, not pose-aware. A person inside the billing polygon is considered part of the queue.
 - SQLite is appropriate for this single-node submission. A multi-store deployment should move ingestion behind a durable broker and persist to PostgreSQL or a time-series store.
@@ -160,4 +199,20 @@ Replace `config/store_layout.json` coordinates with official definitions if thos
 
 ## Review Material
 
-Submission review artifacts are included at the repository root: `FINAL_REVIEW.md`, `COMPLIANCE_REPORT.md`, `TEST_REPORT.md`, `ANOMALY_VALIDATION.md`, `API_VALIDATION_REPORT.md`, `DETECTION_EVALUATION.md`, `STRESS_TEST_REPORT.md`, `DEMO_GUIDE.md`, `DEMO_SCRIPT.md`, `INTERVIEW_PREP.md`, and `SUBMISSION_CHECKLIST.md`.
+Start with:
+
+| Document | Purpose |
+| --- | --- |
+| `EXECUTIVE_SUMMARY.md` | One-page evaluator overview |
+| `RESULTS.md` | Measured execution results |
+| `ARCHITECTURE_DECISIONS.md` | Key design rationale |
+| `SYSTEM_VERIFICATION_REPORT.md` | End-to-end evidence |
+| `LIMITATIONS.md` | Explicit boundaries and future work |
+| `EVALUATOR_SCORECARD.md` | Rubric-based score estimate |
+| `TIMESTAMP_ORDERING_ANALYSIS.md` | Verified timestamp-ordering root cause and correction |
+| `STAFF_CLASSIFICATION_REVIEW.md` | Staff exclusion implementation and dataset evidence |
+| `FINAL_SUBMISSION_REASSESSMENT.md` | Current submission-readiness decision |
+| `FINAL_SUBMISSION_SANITY_CHECK.md` | Final documentation and packaging audit |
+| `FINAL_REPOSITORY_HYGIENE_REPORT.md` | Final repository hygiene result |
+
+Additional focused reports remain available for audit evidence, demo preparation, and interview follow-up.
